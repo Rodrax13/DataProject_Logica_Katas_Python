@@ -71,6 +71,22 @@ resultado = diferencia_listas(lista_a, lista_b)
 print(resultado)
 
 
+#4. Versión corregida #
+
+def diferencia_listas(lista1, lista2):
+    # Usamos map() para restar elemento a elemento
+    if len(lista1) != len(lista2):
+        raise ValueError("Las listas deben tener la misma longitud")
+    return list(map(lambda x, y: x - y, lista1, lista2))
+
+
+# Ejemplo de uso
+lista_a = [10, 20, 30, 40]
+lista_b = [1, 5, 10, 15]
+
+resultado = diferencia_listas(lista_a, lista_b)
+print(resultado)
+
 
 
 #5. Ecribe una función que tome una lista de números como parámetro y un valor opcional nota_aprobado, que por
@@ -162,6 +178,29 @@ def dividir_numeros():
 dividir_numeros()
 
 
+#8. Versión corregida #
+
+def dividir_numeros():
+    try:
+        # Pedimos los números al usuario
+        num1 = float(input("Introduce el primer número: "))
+        num2 = float(input("Introduce el segundo número: "))
+
+        # Intentamos realizar la división
+        resultado = num1 / num2
+
+    except ValueError:
+        print("Error: Debes ingresar solo valores numéricos.")
+    except ZeroDivisionError:
+        print("Error: No se puede dividir entre cero.")
+    else:
+        print(f"División exitosa: {num1} / {num2} = {resultado}")
+    finally:
+        print("Fin del programa.")
+
+
+if __name__ == "__main__":
+    dividir_numeros()
 
 
 #9. Escribe una función que tome una lista de nombres de mascotas como parámetro y devuelva una nueva lista
@@ -556,6 +595,33 @@ def buscar_nombre():
 buscar_nombre()
 
 
+#8. Versión corregida #
+
+class NombreNoEncontradoError(Exception):
+    pass
+
+
+def buscar_nombre(lista_nombres, nombre_a_buscar):
+    if nombre_a_buscar in lista_nombres:
+        return f"El nombre '{nombre_a_buscar}' fue encontrado en la lista."
+    else:
+        raise NombreNoEncontradoError(
+            f"El nombre '{nombre_a_buscar}' no se encuentra en la lista."
+        )
+
+
+if __name__ == "__main__":
+    entrada = input("Introduce una lista de nombres separados por comas: ")
+    lista = [n.strip() for n in entrada.split(",")]
+
+    nombre = input("Introduce el nombre a buscar: ").strip()
+
+    try:
+        mensaje = buscar_nombre(lista, nombre)
+        print(mensaje)
+    except NombreNoEncontradoError as e:
+        print(e)
+
 
 
 #32. Crea una función que tome un nombre completo y una lista de empleados, busque el nombre completo en la lista y
@@ -685,7 +751,71 @@ info = mi_arbol.info_arbol()
 print(info)
 
 
+#34. Versión corregida #
 
+class Arbol:
+    def __init__(self):
+        """Inicializa un árbol con tronco=1 y sin ramas."""
+        self.tronco = 1
+        self.ramas = []
+
+    def crecer_tronco(self):
+        """Aumenta la longitud del tronco en 1."""
+        self.tronco += 1
+
+    def nueva_rama(self):
+        """Agrega una nueva rama de longitud 1."""
+        self.ramas.append(1)
+
+    def crecer_ramas(self):
+        """Aumenta en 1 la longitud de todas las ramas."""
+        self.ramas = [rama + 1 for rama in self.ramas]
+
+    def quitar_rama(self, posicion):
+        """Elimina la rama en la posición indicada (0-index)."""
+        if 0 <= posicion < len(self.ramas):
+            self.ramas.pop(posicion)
+        else:
+            raise IndexError(f"Posición inválida: {posicion}")
+
+    def info_arbol(self):
+        """Devuelve información del árbol como diccionario."""
+        return {
+            "longitud_tronco": self.tronco,
+            "numero_ramas": len(self.ramas),
+            "longitudes_ramas": self.ramas
+        }
+
+    def __str__(self):
+        """Representación intuitiva del árbol al imprimirlo."""
+        return f"Tronco: {self.tronco}, Ramas: {self.ramas}"
+
+# ------------------------------
+# Caso de uso
+# ------------------------------
+
+# 1. Crear un árbol
+mi_arbol = Arbol()
+
+# 2. Hacer crecer el tronco una unidad
+mi_arbol.crecer_tronco()
+
+# 3. Añadir una nueva rama
+mi_arbol.nueva_rama()
+
+# 4. Hacer crecer todas las ramas una unidad
+mi_arbol.crecer_ramas()
+
+# 5. Añadir dos nuevas ramas
+mi_arbol.nueva_rama()
+mi_arbol.nueva_rama()
+
+# 6. Retirar la rama situada en la posición 2 (0-index)
+mi_arbol.quitar_rama(2)
+
+# 7. Obtener información sobre el árbol
+info = mi_arbol.info_arbol()
+print(info)
 
 #36. Crea la clase UsuarioBanco ,representa a un usuario de un banco con su nombre, saldo y si tiene o no cuenta
 #corriente. Proporciona métodos para realizar operaciones como retirar dinero, transferir dinero desde otro usuario y
@@ -732,6 +862,62 @@ class UsuarioBanco:
             raise ValueError("La cantidad a agregar debe ser positiva.")
         self.saldo += cantidad
         print(f"{self.nombre} ha agregado {cantidad}. Saldo actual: {self.saldo}")
+
+
+# Caso de uso ajustado:
+
+# 1. Crear dos usuarios
+alicia = UsuarioBanco("Alicia", 100, True)
+bob = UsuarioBanco("Bob", 50, True)
+
+# 2. Agregar 50 unidades de saldo a Bob (para que pueda transferir 80)
+bob.agregar_dinero(50)  # Bob pasa de 50 → 100
+
+# 3. Hacer una transferencia de 80 unidades desde Bob a Alicia
+alicia.transferir_dinero(bob, 80)  # Bob: 100 → 20, Alicia: 100 → 180
+
+# 4. Retirar 50 unidades de saldo a Alicia
+alicia.retirar_dinero(50)  # Alicia: 180 → 130
+
+
+
+#36. Versión corregida #
+
+class UsuarioBanco:
+    def __init__(self, nombre, saldo, tiene_cuenta_corriente):
+        self.nombre = nombre
+        self.saldo = saldo
+        self.tiene_cuenta_corriente = tiene_cuenta_corriente
+
+    def retirar_dinero(self, cantidad):
+        if cantidad <= 0:
+            raise ValueError("La cantidad a retirar debe ser positiva.")
+        if cantidad > self.saldo:
+            raise ValueError(f"{self.nombre} no tiene suficiente saldo para retirar {cantidad}.")
+        self.saldo -= cantidad
+        return f"{self.nombre} ha retirado {cantidad}. Saldo actual: {self.saldo}"
+
+    def transferir_dinero(self, usuario_origen, cantidad):
+        if cantidad <= 0:
+            raise ValueError("La cantidad a transferir debe ser positiva.")
+        if not usuario_origen.tiene_cuenta_corriente or not self.tiene_cuenta_corriente:
+            raise ValueError("Ambos usuarios deben tener cuenta corriente para realizar la transferencia.")
+        if cantidad > usuario_origen.saldo:
+            raise ValueError(f"{usuario_origen.nombre} no tiene suficiente saldo para transferir {cantidad}.")
+        usuario_origen.saldo -= cantidad
+        self.saldo += cantidad
+        return (f"{usuario_origen.nombre} ha transferido {cantidad} a {self.nombre}. "
+                f"Saldo de {usuario_origen.nombre}: {usuario_origen.saldo}, "
+                f"Saldo de {self.nombre}: {self.saldo}")
+
+    def agregar_dinero(self, cantidad):
+        if cantidad <= 0:
+            raise ValueError("La cantidad a agregar debe ser positiva.")
+        self.saldo += cantidad
+        return f"{self.nombre} ha agregado {cantidad}. Saldo actual: {self.saldo}"
+
+    def __str__(self):
+        return f"Usuario: {self.nombre}, Saldo: {self.saldo}, Cuenta corriente: {self.tiene_cuenta_corriente}"
 
 
 # Caso de uso ajustado:
@@ -821,6 +1007,69 @@ print("Eliminar palabra:", resultado_eliminar)
 
 
 
+#37. Versión Corregida #
+
+# 1. Función para contar palabras
+def contar_palabras(texto):
+    # Normalizar a minúsculas y eliminar puntuación
+    texto_limpio = re.sub(r'[^\w\s]', '', texto.lower())
+    palabras = texto_limpio.split()
+    frecuencias = {}
+    for palabra in palabras:
+        frecuencias[palabra] = frecuencias.get(palabra, 0) + 1
+    return frecuencias
+
+# 2. Función para reemplazar palabras
+def reemplazar_palabras(texto, palabra_original, palabra_nueva):
+    # Normalizar mayúsculas/minúsculas en búsqueda
+    patron = re.compile(re.escape(palabra_original), re.IGNORECASE)
+    return patron.sub(palabra_nueva, texto)
+
+# 3. Función para eliminar una palabra
+def eliminar_palabra(texto, palabra_a_eliminar):
+    # Normalizar mayúsculas/minúsculas y eliminar signos de puntuación para coincidencia
+    palabras = texto.split()
+    resultado = []
+    for p in palabras:
+        p_sin_puntuacion = re.sub(r'[^\w\s]', '', p).lower()
+        if p_sin_puntuacion != palabra_a_eliminar.lower():
+            resultado.append(p)
+    return " ".join(resultado)
+
+# 4. Función principal que procesa el texto
+def procesar_texto(texto, opcion, *args):
+    if opcion == "contar":
+        return contar_palabras(texto)
+    elif opcion == "reemplazar":
+        if len(args) != 2:
+            raise ValueError("Para reemplazar se necesitan 2 argumentos: palabra_original y palabra_nueva.")
+        return reemplazar_palabras(texto, args[0], args[1])
+    elif opcion == "eliminar":
+        if len(args) != 1:
+            raise ValueError("Para eliminar se necesita 1 argumento: palabra_a_eliminar.")
+        return eliminar_palabra(texto, args[0])
+    else:
+        raise ValueError("Opción no válida. Elige entre 'contar', 'reemplazar', 'eliminar'.")
+
+# ------------------------------
+# Caso de uso
+# ------------------------------
+texto_ejemplo = "Python es un lenguaje de programación. Python es muy poderoso."
+
+# Contar palabras
+resultado_contar = procesar_texto(texto_ejemplo, "contar")
+print("Contar palabras:", resultado_contar)
+
+# Reemplazar palabra
+resultado_reemplazar = procesar_texto(texto_ejemplo, "reemplazar", "Python", "Java")
+print("Reemplazar palabra:", resultado_reemplazar)
+
+# Eliminar palabra
+resultado_eliminar = procesar_texto(texto_ejemplo, "eliminar", "Python")
+print("Eliminar palabra:", resultado_eliminar)
+
+
+
 
 #38. Genera un programa que nos diga si es de noche, de día o tarde según la hora proporcionada por el usuario.
 
@@ -850,6 +1099,39 @@ def determinar_momento_dia():
 determinar_momento_dia()
 
 
+#38. Versión Corregida #
+
+# Función con la lógica de cálculo
+def momento_dia(hora):
+    """
+    Determina el momento del día según la hora (0-23).
+    Devuelve "Mañana / Día", "Tarde" o "Noche".
+    """
+    if not (0 <= hora <= 23):
+        raise ValueError("La hora debe estar entre 0 y 23.")
+    
+    if 6 <= hora < 12:
+        return "Mañana / Día"
+    elif 12 <= hora < 18:
+        return "Tarde"
+    else:
+        return "Noche"
+
+
+# Parte interactiva opcional
+def determinar_momento_dia():
+    try:
+        # Pedimos la hora al usuario
+        hora = int(input("Introduce la hora (0-23): "))
+        momento = momento_dia(hora)
+        print(f"Son las {hora}:00. Es {momento}.")
+    except ValueError as e:
+        print(f"Error: {e}")
+
+
+# Ejecutar la función interactiva
+if __name__ == "__main__":
+    determinar_momento_dia()
 
 
 #39. Escribe un programa que determine qué calificación en texto tiene un alumno en base a su calificación numérica.
@@ -883,6 +1165,39 @@ def calificacion_texto():
 
 # Ejecutar la función
 calificacion_texto()
+
+#39. Versión Corregida #
+
+def calificacion_a_texto(nota):
+    """
+    Convierte una calificación numérica (0-100) en su equivalente en texto.
+    """
+    if not (0 <= nota <= 100):
+        raise ValueError("La calificación debe estar entre 0 y 100.")
+    
+    if 0 <= nota <= 69:
+        return "Insuficiente"
+    elif 70 <= nota <= 79:
+        return "Bien"
+    elif 80 <= nota <= 89:
+        return "Muy bien"
+    else:  # 90-100
+        return "Excelente"
+
+
+# Parte interactiva opcional
+def calificacion_texto():
+    try:
+        nota = float(input("Introduce la calificación del alumno (0-100): "))
+        texto = calificacion_a_texto(nota)
+        print(f"La calificación {nota} corresponde a: {texto}")
+    except ValueError as e:
+        print(f"Error: {e}")
+
+
+# Ejecutar la función interactiva
+if __name__ == "__main__":
+    calificacion_texto()
 
 
 
@@ -975,4 +1290,50 @@ def calcular_precio_final():
 # Ejecutar la función
 calcular_precio_final()
 
+#41. Versión Corregida #
+
+def calcular_precio_final_limpio(precio_original, valor_cupon=0):
+    """
+    Calcula el precio final de un artículo después de aplicar un descuento opcional.
+    
+    Args:
+        precio_original (float): Precio inicial del artículo.
+        valor_cupon (float, opcional): Valor del cupón de descuento. Default es 0.
+    
+    Returns:
+        float: Precio final después de aplicar el descuento (no negativo).
+    
+    Raises:
+        ValueError: Si precio_original o valor_cupon son negativos.
+    """
+    if precio_original < 0:
+        raise ValueError("El precio no puede ser negativo.")
+    if valor_cupon < 0:
+        raise ValueError("El valor del cupón no puede ser negativo.")
+    
+    precio_final = max(precio_original - valor_cupon, 0)
+    return precio_final
+
+
+# Parte interactiva opcional
+def calcular_precio_final():
+    try:
+        precio_original = float(input("Introduce el precio original del artículo: "))
+        
+        tiene_cupon = input("¿Tienes un cupón de descuento? (sí/no): ").strip().lower()
+        valor_cupon = 0
+        
+        if tiene_cupon in ("sí", "si"):
+            valor_cupon = float(input("Introduce el valor del cupón de descuento: "))
+        
+        precio_final = calcular_precio_final_limpio(precio_original, valor_cupon)
+        print(f"El precio final de la compra es: {precio_final:.2f}€")
+    
+    except ValueError as e:
+        print(f"Error: {e}")
+
+
+# Ejecutar función interactiva
+if __name__ == "__main__":
+    calcular_precio_final()
 
